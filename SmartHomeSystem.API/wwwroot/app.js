@@ -111,9 +111,11 @@
 
   function renderLog() {
     const statusClass = (s) => (s === 0 || s >= 500 ? 'code--bad' : s >= 400 ? 'code--warn' : 'code--ok');
-    $('#log').innerHTML = state.log.length
+    const hideGet = $('#log-hide-get').checked;
+    const rows = hideGet ? state.log.filter((r) => r.method !== 'GET') : state.log;
+    $('#log').innerHTML = rows.length
       ? `<table><thead><tr><th>Час</th><th>Метод</th><th>Адреса</th><th class="num">Статус</th><th class="num">мс</th></tr></thead><tbody>${
-        state.log.map((r) => `<tr><td>${esc(fmtDate(r.time))}</td><td class="code">${esc(r.method)}</td><td class="code">${esc(r.path)}</td><td class="num code ${statusClass(r.status)}">${r.status || 'ERR'}</td><td class="num">${r.ms}</td></tr>`).join('')
+        rows.map((r) => `<tr><td>${esc(fmtDate(r.time))}</td><td class="code">${esc(r.method)}</td><td class="code">${esc(r.path)}</td><td class="num code ${statusClass(r.status)}">${r.status || 'ERR'}</td><td class="num">${r.ms}</td></tr>`).join('')
       }</tbody></table>`
       : '<div class="empty">Запитів ще не було.</div>';
   }
@@ -568,6 +570,8 @@
     const card = event.target.closest && event.target.closest('.card[data-room]');
     if (card && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); openDrawer(card.dataset.room); }
   });
+
+  $('#log-hide-get').addEventListener('change', renderLog);
 
   $('#room-search').addEventListener('input', debounce((e) => {
     state.roomQuery = e.target.value;
