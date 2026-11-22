@@ -7,6 +7,6 @@ obj/
 *.db
 *.db-shm
 *.db-wal
-data/
+SmartHomeSystem.API/data/
 .env
 appsettings.*.local.json
