@@ -1,0 +1,46 @@
+# Локальний запуск API + PostgreSQL: docker compose up --build
+# Конфігурація береться зі змінних середовища (файл .env поруч, див. .env.example) — в образі її немає.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: smarthome
+      POSTGRES_USER: smarthome
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local_dev_only}   # лише для локальної розробки
+    volumes:
+      - smarthome-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smarthome -d smarthome"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    image: smarthome-api:lab7
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "5000:8080"          # http://localhost:5000  ->  порт 8080 у контейнері
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ConnectionStrings__SmartHomeDatabase: "Host=db;Port=5432;Database=smarthome;Username=smarthome;Password=${POSTGRES_PASSWORD:-local_dev_only}"
+      Database__SeedDemoData: ${SEED_DEMO_DATA:-true}   # демо-дані лише для показу
+      Swagger__Enabled: ${SWAGGER_ENABLED:-true}
+      Https__Redirect: "false"                           # TLS завершує платформа / локально його немає
+    healthcheck:
+      # В образі aspnet немає curl, тому використовуємо bash і /dev/tcp.
+      test:
+        - CMD
+        - bash
+        - -c
+        - "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /health HTTP/1.0\\r\\n\\r\\n' >&3 && head -n1 <&3 | grep -q ' 200 '"
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+
+volumes:
+  smarthome-pgdata:

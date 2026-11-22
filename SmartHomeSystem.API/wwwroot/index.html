@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Розумний будинок</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Cpath d='M16 7 6 15h3v9h14v-9h3z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <div class="brand">
+        <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M16 7 6 15h3v9h14v-9h3z" fill="var(--surface)"/></svg>
+        <div>
+          <h1>Розумний будинок</h1>
+          <p>Панель керування SmartHomeSystem</p>
+        </div>
+      </div>
+      <div class="topbar__right">
+        <span class="pill" id="pill-live" title="GET /health"><i></i><span>API: перевірка…</span></span>
+        <span class="pill" id="pill-ready" title="GET /health/ready"><i></i><span>БД: перевірка…</span></span>
+        <a class="link-btn" href="swagger/index.html" target="_blank" rel="noopener">Swagger</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="stats" id="stats" aria-label="Зведення"></section>
+
+    <nav class="tabs" role="tablist">
+      <button role="tab" class="tab is-active" data-tab="rooms">Кімнати</button>
+      <button role="tab" class="tab" data-tab="devices">Пристрої</button>
+      <button role="tab" class="tab" data-tab="log">Журнал запитів <span class="badge" id="log-count">0</span></button>
+    </nav>
+
+    <section id="tab-rooms" class="tabpanel">
+      <div class="toolbar">
+        <input type="search" id="room-search" placeholder="Пошук кімнати (GET /api/rooms/search)…" aria-label="Пошук кімнати">
+        <button class="btn btn--primary" data-action="room-add">+ Кімната</button>
+      </div>
+      <div id="rooms" class="grid"></div>
+    </section>
+
+    <section id="tab-devices" class="tabpanel" hidden>
+      <div class="toolbar">
+        <input type="search" id="device-search" placeholder="Пошук пристрою (GET /api/devices?name=)…" aria-label="Пошук пристрою">
+        <button class="btn btn--primary" data-action="device-add">+ Пристрій</button>
+      </div>
+      <div id="devices" class="table-wrap"></div>
+    </section>
+
+    <section id="tab-log" class="tabpanel" hidden>
+      <div class="toolbar">
+        <p class="muted">Усі запити фронтенда до REST API з кодами відповіді — зручно для звіту про тестування.</p>
+        <button class="btn" data-action="log-clear">Очистити</button>
+      </div>
+      <div id="log" class="table-wrap"></div>
+    </section>
+  </main>
+
+  <div class="overlay" id="overlay" hidden></div>
+  <aside class="drawer" id="drawer" aria-hidden="true"></aside>
+
+  <dialog id="dialog">
+    <form method="dialog" id="dialog-form" novalidate></form>
+  </dialog>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
