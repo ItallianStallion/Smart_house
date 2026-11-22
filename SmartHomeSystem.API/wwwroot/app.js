@@ -554,7 +554,7 @@
       return;
     }
 
-    const card = event.target.closest('[data-room]');
+    const card = event.target.closest('.card[data-room]');
     if (card) openDrawer(card.dataset.room);
   });
 
@@ -565,7 +565,7 @@
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && state.selectedRoomId && !$('#dialog').open) closeDrawer();
-    const card = event.target.closest && event.target.closest('[data-room]');
+    const card = event.target.closest && event.target.closest('.card[data-room]');
     if (card && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); openDrawer(card.dataset.room); }
   });
 
